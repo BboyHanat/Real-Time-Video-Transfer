@@ -56,19 +56,19 @@ class LossNet(nn.Module):
         out['conv3_2'] = F.relu(self.conv3_2(out['conv3_1']))
         out['conv3_3'] = F.relu(self.conv3_3(out['conv3_2']))
         out['conv3_4'] = F.relu(self.conv3_4(out['conv3_3']))
-        out['pool3']   = F.max_pool2d(out['conv3_4'])
+        out['pool3']   = F.max_pool2d(out['conv3_4'], kernel_size=2)
 
         out['conv4_1'] = F.relu(self.conv4_1(out['pool3']))
         out['conv4_2'] = F.relu(self.conv4_2(out['conv4_1']))
         out['conv4_3'] = F.relu(self.conv4_3(out['conv4_2']))
         out['conv4_4'] = F.relu(self.conv4_4(out['conv4_3']))
-        out['pool4']   = F.max_pool2d(out['conv4_4'])
+        out['pool4']   = F.max_pool2d(out['conv4_4'], kernel_size=2)
 
         out['conv5_1'] = F.relu(self.conv5_1(out['pool4']))
         out['conv5_2'] = F.relu(self.conv5_2(out['conv5_1']))
         out['conv5_3'] = F.relu(self.conv5_3(out['conv5_2']))
         out['conv5_4'] = F.relu(self.conv5_4(out['conv5_3']))
-        out['pool5']   = F.max_pool2d(out['conv5_4'])
+        out['pool5']   = F.max_pool2d(out['conv5_4'], kernel_size=2)
 
         return [out[key] for key in out_key]
 
