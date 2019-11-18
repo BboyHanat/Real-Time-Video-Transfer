@@ -14,18 +14,22 @@ class Dataset(data.Dataset):
         self.video_list = os.listdir(data_path)
 
     def __getitem__(self, i):
+        print(i)
         video = cv2.VideoCapture(os.path.join(self.data_path, self.video_list[i]))
         frames = list()
 
         while (video.isOpened()):
             ret, frame = video.read()
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BG2RGB)
+            if not ret:
+                break
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             rgb_frame = cv2.resize(rgb_frame, self.img_shape)
-            
+
             if self.transform is not None:
                 rgb_frame = self.transform(rgb_frame)
 
             frames.append(rgb_frame)
+            print(len(frames))
         
         return frames
 

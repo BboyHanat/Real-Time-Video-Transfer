@@ -95,12 +95,15 @@ class Transfer:
                     temporal_loss = TemporalLoss(self.gpu)(h_xt, flow, mask)
                     # Spatial Loss
                     spatial_loss = self.s_a * content_loss + self.s_b * style_loss + self.s_r * tv_loss
-                    
+
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     adam.step()
+                    print("Loss is: {}, epoch: {}".format(Loss, count))
+            torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}_s{}.pth'.format(count))
 
 
 
-transfer = Transfer(10, 'data', 'data/1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(1920, 1080))
+
+transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(1920, 1080))
 transfer.train()
