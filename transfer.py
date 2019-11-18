@@ -39,6 +39,7 @@ class Transfer:
         img = Image.open(self.style_path)
         img = img.resize(self.img_shape)
         img = transform(img).float()
+        img = img.unsqueeze(0)
         img = Variable(img, requires_grad=True)
         return img
 
