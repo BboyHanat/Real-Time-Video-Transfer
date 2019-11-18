@@ -47,9 +47,9 @@ class Transfer:
         style_img = self.load_style()
 
         if self.gpu:
-            self.style_net = self.style_net.gpu()
-            self.loss_net = self.loss_net.gpu()
-            style_img = style_img.gpu()
+            self.style_net = self.style_net.cuda()
+            self.loss_net = self.loss_net.cuda()
+            style_img = style_img.cuda()
 
         adam = optim.Adam(self.style_net.parameters(), lr=self.lr)
         
