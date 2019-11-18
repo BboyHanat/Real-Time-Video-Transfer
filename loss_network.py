@@ -46,7 +46,7 @@ class LossNet(nn.Module):
         out = {}
         out['conv1_1'] = F.relu(self.conv1_1(x))
         out['conv1_2'] = F.relu(self.conv1_2(out['conv1_1']))
-        out['pool1']   = F.max_pool2d(out['conv1_2'])
+        out['pool1']   = F.max_pool2d(out['conv1_2'], kernel_size=2)
 
         out['conv2_1'] = F.relu(self.conv2_1(out['pool1']))
         out['conv2_2'] = F.relu(self.conv2_2(out['conv2_1']))

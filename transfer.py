@@ -58,7 +58,9 @@ class Transfer:
         print('Training Start!!')
         for count in range(self.epoch):
             for step, frames in enumerate(loader):
+                print("step {}".format(step))
                 for i in range(1, len(frames)):
+
                     x_t = frames[i]
                     x_t1 = frames[i-1]
 
@@ -99,8 +101,8 @@ class Transfer:
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     adam.step()
-                    print("Loss is: {}, epoch: {}".format(Loss, count))
-            torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}_s{}.pth'.format(count))
+                    print("Loss is: {}, epoch: {}".format(Loss, i))
+            torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 
 
