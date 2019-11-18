@@ -29,8 +29,6 @@ class Dataset(data.Dataset):
                 rgb_frame = self.transform(rgb_frame)
 
             frames.append(rgb_frame)
-            print(len(frames))
-        
         return frames
 
     def __len__(self):
