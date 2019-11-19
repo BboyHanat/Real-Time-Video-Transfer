@@ -114,7 +114,7 @@ class Transfer:
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     sgd.step()
-                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, epoch: {}".format(Loss, spatial_loss, temporal_loss, i))
+                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 
