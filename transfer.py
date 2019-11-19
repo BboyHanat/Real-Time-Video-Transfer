@@ -1,8 +1,9 @@
-import torch
+import logging
+from logging.handlers import TimedRotatingFileHandler
+import os
 import torch.optim as optim
 
-from torch.autograd import Variable
-from torchvision import datasets, transforms
+from torchvision import transforms
 from PIL import Image
 
 from style_network import *
@@ -10,9 +11,7 @@ from loss_network import *
 from dataset import get_loader
 from opticalflow import opticalflow
 import cv2
-import os
-import logging
-from logging.handlers import TimedRotatingFileHandler
+
 
 osp = os.path
 
@@ -74,12 +73,13 @@ class Transfer:
         
         loader = get_loader(1, self.data_path, self.img_shape, self.transform)
         logger.info('Data Load Success!!')
-
+        print('Data Load Success!!')
 
         logger.info('Training Start!!')
+        print('Training Start!!')
         for count in range(self.epoch):
             for step, frames in enumerate(loader):
-                logger.info("step {}".format(step))
+                logger.info('step {}'.format(str(step)))
                 for i in range(1, len(frames)):
 
                     x_t = frames[i]
@@ -132,15 +132,17 @@ class Transfer:
                     Loss.backward(retain_graph=True)
                     adam.step()
 
-                    logger.info("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}".format(Loss, spatial_loss, temporal_loss, step, i))
-
+                    logger.info('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
+                    print('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
                 np_image = h_xt.data.cpu().numpy()
                 np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
                 np_image = np.asarray((np_image + 1) * 127.5, np.uint8)
-                cv2.imwrite("style_{}_{}.jpg".format(count, step), np_image)
-            logger.info("model saving")
+                cv2.imwrite('style_{}_{}.jpg'.format(count, step), np_image)
+            logger.info('model saving')
+            print('model saving')
             torch.save(self.style_net.state_dict(), 'model/style_model_epoch_{}.pth'.format(count))
-            logger.info("model save finish")
+            logger.info('model save finish')
+            print('model save finish')
 
 
 
