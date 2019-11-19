@@ -119,13 +119,13 @@ class Transfer:
                     Loss.backward(retain_graph=True)
                     adam.step()
 
-                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
+                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}".format(Loss, spatial_loss, temporal_loss, step, i))
 
                 np_image = h_xt.data.cpu().numpy()
                 np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
-                np_image = np_image * 255
-                cv2.imwrite("style_{}_{}.jpg".format(step, count), np_image)
-            torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
+                np_image = np.asarray((np_image + 1) * 127.5, np.uint8)
+                cv2.imwrite("style_{}_{}.jpg".format(count, step), np_image)
+            torch.save(self.style_net.state_dict(), 'model/style_model_epoch_{}.pth'.format(count))
 
 
 
