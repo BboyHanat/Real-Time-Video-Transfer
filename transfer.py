@@ -93,7 +93,6 @@ class Transfer:
                     # StyleLoss
                     style_t = StyleLoss(self.gpu)(s[0], s_hxt[0])
                     style_t1 = StyleLoss(self.gpu)(s[0], s_hxt1[0])
-                    tv_loss = TVLoss()(s_hxt[0])
 
                     for layer in range(1, len(self.style_layer)):
                         style_t += StyleLoss(self.gpu)(s[layer], s_hxt[layer])
@@ -101,7 +100,7 @@ class Transfer:
 
 
                         # TVLoss
-                        tv_loss += TVLoss()(s_hxt[layer])
+                    tv_loss = TVLoss()(s_hxt[3])
                     style_loss = style_t + style_t1
                     if self.gpu:
                         flow, mask = opticalflow(h_xt1.data.cpu().numpy(), h_xt.data.cpu().numpy())
@@ -119,13 +118,13 @@ class Transfer:
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     adam.step()
-                    if i >= 200 and i % 200 == 0:
-                        np_image = h_xt.data.cpu().numpy()
-                        np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
-                        np_image = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406))*255
-                        cv2.imwrite("style_{}_{}.jpg".format(step, i), np_image)
-                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
 
+                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
+                if step >= 10 and step % 10 == 0:
+                    np_image = h_xt.data.cpu().numpy()
+                    np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
+                    np_image = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
+                    cv2.imwrite("style_{}_{}.jpg".format(step, count), np_image)
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 

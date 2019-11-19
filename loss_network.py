@@ -16,7 +16,7 @@ def vgg19(vgg_path, pretrained=True, **kwargs):
     model = vgg.VGG(vgg.make_layers(vgg.cfg['E']), **kwargs)
     if pretrained:
         state_dict = torch.load(vgg_path)
-        state_dict = {k:v for k, v in state_dict.items() if 'class' not in k}
+        state_dict = {k: v for k, v in state_dict.items() if 'class' not in k}
         model.load_state_dict(state_dict)
     return model
 
@@ -46,17 +46,17 @@ class LossNet(nn.Module):
         out = {}
         out['conv1_1'] = F.relu(self.conv1_1(x))
         out['conv1_2'] = F.relu(self.conv1_2(out['conv1_1']))
-        out['pool1']   = F.max_pool2d(out['conv1_2'], kernel_size=2)
+        out['pool1'] = F.max_pool2d(out['conv1_2'], kernel_size=2)
 
         out['conv2_1'] = F.relu(self.conv2_1(out['pool1']))
         out['conv2_2'] = F.relu(self.conv2_2(out['conv2_1']))
-        out['pool2']   = F.max_pool2d(out['conv2_2'], kernel_size=2)
-        
+        out['pool2'] = F.max_pool2d(out['conv2_2'], kernel_size=2)
+
         out['conv3_1'] = F.relu(self.conv3_1(out['pool2']))
         out['conv3_2'] = F.relu(self.conv3_2(out['conv3_1']))
         out['conv3_3'] = F.relu(self.conv3_3(out['conv3_2']))
         out['conv3_4'] = F.relu(self.conv3_4(out['conv3_3']))
-        out['pool3']   = F.max_pool2d(out['conv3_4'], kernel_size=2)
+        out['pool3'] = F.max_pool2d(out['conv3_4'], kernel_size=2)
 
         out['conv4_1'] = F.relu(self.conv4_1(out['pool3']))
         out['conv4_2'] = F.relu(self.conv4_2(out['conv4_1']))
@@ -86,7 +86,8 @@ class ContentLoss(nn.Module):
         assert x.shape == target.shape, "input & target shape ain't same."
         b, c, h, w = x.shape
 
-        return (1 /(c * h * w)) * torch.mean((x - target) ** 2)
+        return (1 / (c * h * w)) * torch.mean((x - target) ** 2)
+
 
 class StyleLoss(nn.Module):
     def __init__(self, gpu):
@@ -96,10 +97,12 @@ class StyleLoss(nn.Module):
         else:
             loss = nn.MSELoss()
         self.loss = loss
+
     def forward(self, x, target):
         channel = x.shape[3]
-        loss = (1 / channel ** 2) * self.loss(GramMatrix()(x), GramMatrix()(target))
+        loss = (1 / (channel ** 2)) * self.loss(GramMatrix()(x), GramMatrix()(target))
         return loss
+
 
 class TemporalLoss(nn.Module):
     """
@@ -107,6 +110,7 @@ class TemporalLoss(nn.Module):
     f_x1: optical flow(frame t-1)
     cm: confidence mask of optical flow 
     """
+
     def __init__(self, gpu):
         super(TemporalLoss, self).__init__()
         if gpu:
@@ -119,8 +123,9 @@ class TemporalLoss(nn.Module):
         assert x.shape == f_x1.shape, "inputs are ain't same"
         _, c, h, w = x.shape
         power_sub = (x - f_x1) ** 2
-        loss = torch.sum(cm * power_sub[:,0,:,:] + cm * power_sub[:,1,:,:]+ cm * power_sub[:,2,:,:]) / (w*h)
+        loss = torch.sum(cm * power_sub[:, 0, :, :] + cm * power_sub[:, 1, :, :] + cm * power_sub[:, 2, :, :]) / (w * h)
         return loss
+
 
 class TVLoss(nn.Module):
     def __init__(self):
@@ -130,20 +135,15 @@ class TVLoss(nn.Module):
         b, c, h, w = x.shape
 
         for i_w in range(w - 1):
-            sum_cols = (x[0, :, :, i_w+1] - x[0, :, :, i_w]) ** 2
+            sum_cols = (x[0, :, :, i_w + 1] - x[0, :, :, i_w]) ** 2
         sum = torch.sum(sum_cols)
-        for i_h in range(h-1):
-            sum_rows = (x[0, :, [i_h+1], :] - x[0, :, i_h, :]) ** 2
+        for i_h in range(h - 1):
+            sum_rows = (x[0, :, [i_h + 1], :] - x[0, :, i_h, :]) ** 2
         sum += torch.sum(sum_rows)
-        # sum = 0
-        # for i_c in range(c):
-        #     for i_h in range(h-1):
-        #         for i_w in range(w-1):
-        #             sum += (x[0][i_c][i_h][i_w+1] - x[0][i_c][i_h][i_w]) ** 2
-        #             sum += (x[0][i_c][i_h+1][i_w] - x[0][i_c][i_h][i_w]) ** 2
 
         return sum ** 0.5
-                    
+
+
 class GramMatrix(nn.Module):
     def __init__(self):
         super(GramMatrix, self).__init__()
@@ -153,5 +153,3 @@ class GramMatrix(nn.Module):
         features = x.view(a * b, c * d)
         G = torch.mm(features, features.t())
         return G.div(a * b * c * d)
-
-
