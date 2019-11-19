@@ -51,10 +51,15 @@ class Transfer:
             self.loss_net = self.loss_net.cuda()
             style_img = style_img.cuda()
 
-        adam = optim.Adam(self.style_net.parameters(), lr=self.lr)
+        sgd = optim.SGD(self.style_net.parameters(), lr=self.lr, momentum=0.9)
         
         loader = get_loader(1, self.data_path, self.img_shape, self.transform)
         print('Data Load Success!!')
+
+
+        for p in self.loss_net.named_parameters():
+            p[1].requires_grad = False
+
 
         print('Training Start!!')
         for count in range(self.epoch):
@@ -108,13 +113,13 @@ class Transfer:
 
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
-                    adam.step()
+                    sgd.step()
                     print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, epoch: {}".format(Loss, spatial_loss, temporal_loss, i))
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 
 
 
-# transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
-transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.001, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
+transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
+# transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.001, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
 transfer.train()
