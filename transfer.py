@@ -9,6 +9,7 @@ from style_network import *
 from loss_network import *
 from dataset import get_loader
 from opticalflow import opticalflow
+import cv2
 
 
 class Transfer:
@@ -76,6 +77,7 @@ class Transfer:
                     h_xt = self.style_net(x_t)
                     h_xt1 = self.style_net(x_t1)
 
+
                     s_xt = self.loss_net(x_t, self.style_layer)
                     s_xt1 = self.loss_net(x_t1, self.style_layer)
                     s_hxt = self.loss_net(h_xt, self.style_layer)
@@ -117,6 +119,9 @@ class Transfer:
                     Loss.backward(retain_graph=True)
                     sgd.step()
                     print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
+                np_image = h_xt.data.cpu().numpy()
+                np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
+                cv2.imwrite("style_{}.jpg".format(count), np_image)
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 
