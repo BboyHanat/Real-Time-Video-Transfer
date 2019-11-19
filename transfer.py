@@ -118,7 +118,7 @@ class Transfer:
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     sgd.step()
-                    if step != 0 and step % 200 == 0:
+                    if step >= 200 and step % 200 == 0:
                         np_image = h_xt.data.cpu().numpy()
                         np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
                         np_image = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406))*255
