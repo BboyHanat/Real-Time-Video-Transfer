@@ -82,23 +82,31 @@ class Transfer:
                     content_t1 = ContentLoss(self.gpu)(s_xt1[3], s_hxt1[3])
                     content_loss = content_t + content_t1
 
+                    print('StyleLoss compute start!')
                     # StyleLoss
                     style_t = StyleLoss(self.gpu)(s[0], s_hxt[0])
                     style_t1 = StyleLoss(self.gpu)(s[0], s_hxt1[0])
                     tv_loss = TVLoss()(s_hxt[0])
+
                     for layer in range(1, len(self.style_layer)):
                         style_t += StyleLoss(self.gpu)(s[layer], s_hxt[layer])
                         style_t1 += StyleLoss(self.gpu)(s[layer], s_hxt1[layer])
 
+
                         # TVLoss
                         tv_loss += TVLoss()(s_hxt[layer])
+                    print('StyleLoss compute finished!')
                     style_loss = style_t + style_t1
 
+                    print('opticalflow compute start!')
                     # Optical flow
                     flow, mask = opticalflow(h_xt.data.numpy(), h_xt1.data.numpy())
+                    print('opticalflow compute finish!')
 
+                    print('TemporalLoss compute start!')
                     # Temporal Loss
                     temporal_loss = TemporalLoss(self.gpu)(h_xt, flow, mask)
+                    print('TemporalLoss compute finished!')
                     # Spatial Loss
                     spatial_loss = self.s_a * content_loss + self.s_b * style_loss + self.s_r * tv_loss
 
