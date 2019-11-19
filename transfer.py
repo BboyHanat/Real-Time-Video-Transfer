@@ -64,6 +64,9 @@ class Transfer:
 
                     x_t = frames[i]
                     x_t1 = frames[i-1]
+                    if self.gpu:
+                        x_t = x_t.cuda()
+                        x_t1 = x_t1.cuda()
 
                     h_xt = self.style_net(x_t)
                     h_xt1 = self.style_net(x_t1)
