@@ -120,6 +120,6 @@ class Transfer:
 
 
 
-transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
-# transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.001, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
+# transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
+transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.001, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
 transfer.train()
