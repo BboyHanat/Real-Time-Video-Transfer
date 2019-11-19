@@ -118,11 +118,9 @@ class TemporalLoss(nn.Module):
     def forward(self, x, f_x1, cm):
         assert x.shape == f_x1.shape, "inputs are ain't same"
         _, c, h, w = x.shape
-        x = x.view(1, -1)
-        f_x1 = f_x1.view(1, -1)
-        cm = cm.view(-1)
-        return self.loss(x, f_x1)
-        # return (torch.sum((x-f_x1) ** 2) * (1 / c)) / (w*h)
+        power_sub = (x - f_x1) ** 2
+        loss = torch.sum(cm * power_sub[:,0,:,:] + cm * power_sub[:,1,:,:]+ cm * power_sub[:,2,:,:]) / (w*h)
+        return loss
 
 class TVLoss(nn.Module):
     def __init__(self):

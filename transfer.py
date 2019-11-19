@@ -104,10 +104,10 @@ class Transfer:
                         tv_loss += TVLoss()(s_hxt[layer])
                     style_loss = style_t + style_t1
                     if self.gpu:
-                        flow, mask = opticalflow(h_xt.data.cpu().numpy(), h_xt1.data.cpu().numpy())
+                        flow, mask = opticalflow(h_xt1.data.cpu().numpy(), h_xt.data.cpu().numpy())
                     # Optical flow
                     else:
-                        flow, mask = opticalflow(h_xt.data.numpy(), h_xt1.data.numpy())
+                        flow, mask = opticalflow(h_xt1.data.numpy(), h_xt.data.numpy())
                     if self.gpu:
                         flow = flow.cuda()
                         mask = mask.cuda()
