@@ -10,7 +10,20 @@ from loss_network import *
 from dataset import get_loader
 from opticalflow import opticalflow
 import cv2
+import os
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
+osp = os.path
+
+trHandler = TimedRotatingFileHandler("train_log.log", when="w1", interval=4, backupCount=12)
+formatter = logging.Formatter('%(asctime)s.%(msecs)03d:%(filename)-12s[%(lineno)4d] %(levelname)-6s %(message)s',
+                                  '%Y-%m-%d %H:%M:%S')
+level = logging.DEBUG
+trHandler.setFormatter(formatter)
+trHandler.setLevel(level)
+logger = logging.getLogger()
+logger.addHandler(trHandler)
 
 class Transfer:
     def __init__(self, epoch, data_path, style_path, vgg_path, lr, spatial_a, spatial_b, spatial_r, temporal_lambda, gpu=False, img_shape=(640, 360)):
@@ -60,13 +73,13 @@ class Transfer:
         sgd = optim.SGD(self.style_net.parameters(), lr=self.lr, momentum=0.9)
         
         loader = get_loader(1, self.data_path, self.img_shape, self.transform)
-        print('Data Load Success!!')
+        logger.info('Data Load Success!!')
 
 
-        print('Training Start!!')
+        logger.info('Training Start!!')
         for count in range(self.epoch):
             for step, frames in enumerate(loader):
-                print("step {}".format(step))
+                logger.info("step {}".format(step))
                 for i in range(1, len(frames)):
 
                     x_t = frames[i]
@@ -119,14 +132,15 @@ class Transfer:
                     Loss.backward(retain_graph=True)
                     adam.step()
 
-                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}".format(Loss, spatial_loss, temporal_loss, step, i))
+                    logger.info("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}".format(Loss, spatial_loss, temporal_loss, step, i))
 
                 np_image = h_xt.data.cpu().numpy()
                 np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
                 np_image = np.asarray((np_image + 1) * 127.5, np.uint8)
                 cv2.imwrite("style_{}_{}.jpg".format(count, step), np_image)
+            logger.info("model saving")
             torch.save(self.style_net.state_dict(), 'model/style_model_epoch_{}.pth'.format(count))
-
+            logger.info("model save finish")
 
 
 
