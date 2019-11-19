@@ -52,6 +52,7 @@ class Transfer:
             self.loss_net = self.loss_net.cuda()
             style_img = style_img.cuda()
 
+        adam = optim.Adam(self.style_net.parameters(), lr=self.lr)
         sgd = optim.SGD(self.style_net.parameters(), lr=self.lr, momentum=0.9)
         
         loader = get_loader(1, self.data_path, self.img_shape, self.transform)
@@ -117,7 +118,7 @@ class Transfer:
 
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
-                    sgd.step()
+                    adam.step()
                     if step >= 200 and step % 200 == 0:
                         np_image = h_xt.data.cpu().numpy()
                         np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
@@ -131,5 +132,5 @@ class Transfer:
 
 
 # transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
-transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.01, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
+transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.001, 1, 10, 0.001, 10000, gpu=True, img_shape=(640, 360))
 transfer.train()
