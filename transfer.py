@@ -118,10 +118,11 @@ class Transfer:
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     sgd.step()
-                    if step !=0 and step%200==0:
+                    if step != 0 and step % 200 == 0:
                         np_image = h_xt.data.cpu().numpy()
                         np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
-                        cv2.imwrite("style_{}.jpg".format(count), np_image)
+                        np_image = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406))*255
+                        cv2.imwrite("style_{}_{}.jpg".format(count, step), np_image)
                     print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
 
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
