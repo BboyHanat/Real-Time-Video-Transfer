@@ -1,6 +1,7 @@
 import os 
 import cv2
 import torch
+import numpy as np
 import torch.utils.data as data
 
 from torchvision import datasets, transforms
@@ -25,7 +26,10 @@ class Dataset(data.Dataset):
             rgb_frame = cv2.resize(rgb_frame, self.img_shape)
 
             if self.transform is not None:
-                rgb_frame = self.transform(rgb_frame)
+                rgb_frame = rgb_frame/127.5 - 1.0
+                rgb_frame = np.transpose(rgb_frame, (2, 0, 1))
+                rgb_frame = torch.from_numpy(rgb_frame).float()
+                # rgb_frame = self.transform(rgb_frame)
 
             frames.append(rgb_frame)
         return frames

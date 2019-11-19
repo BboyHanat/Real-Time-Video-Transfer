@@ -39,7 +39,11 @@ class Transfer:
 
         img = Image.open(self.style_path)
         img = img.resize(self.img_shape)
-        img = transform(img).float()
+        img = np.asarray(img)/127.5 - 1.0
+        img = np.transpose(img, (2, 0, 1))
+        # img = transform(img).float()
+        img = torch.from_numpy(img)
+        img = img.float()
         img = img.unsqueeze(0)
         img = Variable(img, requires_grad=True)
         return img
@@ -57,10 +61,6 @@ class Transfer:
         
         loader = get_loader(1, self.data_path, self.img_shape, self.transform)
         print('Data Load Success!!')
-
-
-        for p in self.loss_net.named_parameters():
-            p[1].requires_grad = False
 
 
         print('Training Start!!')
@@ -120,11 +120,11 @@ class Transfer:
                     adam.step()
 
                     print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}".format(Loss, spatial_loss, temporal_loss, i))
-                if step >= 10 and step % 10 == 0:
-                    np_image = h_xt.data.cpu().numpy()
-                    np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
-                    np_image = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
-                    cv2.imwrite("style_{}_{}.jpg".format(step, count), np_image)
+
+                np_image = h_xt.data.cpu().numpy()
+                np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
+                np_image = np_image * 255
+                cv2.imwrite("style_{}_{}.jpg".format(step, count), np_image)
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 
