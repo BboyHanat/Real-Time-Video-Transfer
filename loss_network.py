@@ -60,21 +60,22 @@ class LossNet(nn.Module):
 
         out['conv4_1'] = F.relu(self.conv4_1(out['pool3']))
         out['conv4_2'] = F.relu(self.conv4_2(out['conv4_1']))
-        out['conv4_3'] = F.relu(self.conv4_3(out['conv4_2']))
-        out['conv4_4'] = F.relu(self.conv4_4(out['conv4_3']))
-        out['pool4']   = F.max_pool2d(out['conv4_4'], kernel_size=2)
-
-        out['conv5_1'] = F.relu(self.conv5_1(out['pool4']))
-        out['conv5_2'] = F.relu(self.conv5_2(out['conv5_1']))
-        out['conv5_3'] = F.relu(self.conv5_3(out['conv5_2']))
-        out['conv5_4'] = F.relu(self.conv5_4(out['conv5_3']))
-        out['pool5']   = F.max_pool2d(out['conv5_4'], kernel_size=2)
+        # out['conv4_3'] = F.relu(self.conv4_3(out['conv4_2']))
+        # out['conv4_4'] = F.relu(self.conv4_4(out['conv4_3']))
+        # out['pool4']   = F.max_pool2d(out['conv4_4'], kernel_size=2)
+        #
+        # out['conv5_1'] = F.relu(self.conv5_1(out['pool4']))
+        # out['conv5_2'] = F.relu(self.conv5_2(out['conv5_1']))
+        # out['conv5_3'] = F.relu(self.conv5_3(out['conv5_2']))
+        # out['conv5_4'] = F.relu(self.conv5_4(out['conv5_3']))
+        # out['pool5']   = F.max_pool2d(out['conv5_4'], kernel_size=2)
 
         return [out[key] for key in out_key]
 
 
 class ContentLoss(nn.Module):
     def __init__(self, gpu):
+        super(ContentLoss, self).__init__()
         if gpu:
             loss = nn.MSELoss().cuda()
         else:
@@ -89,6 +90,7 @@ class ContentLoss(nn.Module):
 
 class StyleLoss(nn.Module):
     def __init__(self, gpu):
+        super(StyleLoss, self).__init__()
         if gpu:
             loss = nn.MSELoss().cuda()
         else:
@@ -96,7 +98,8 @@ class StyleLoss(nn.Module):
         self.loss = loss
     def forward(self, x, target):
         channel = x.shape[3]
-        return (1 / channel ** 2) * self.loss(GramMatrix()(x), GramMatrix()(target))
+        loss = (1 / channel ** 2) * self.loss(GramMatrix()(x), GramMatrix()(target))
+        return loss
 
 class TemporalLoss(nn.Module):
     """
@@ -105,6 +108,7 @@ class TemporalLoss(nn.Module):
     cm: confidence mask of optical flow 
     """
     def __init__(self, gpu):
+        super(StyleLoss, self).__init__()
         if gpu:
             loss = nn.MSELoss().cuda()
         else:
@@ -121,6 +125,9 @@ class TemporalLoss(nn.Module):
         return (1 / D) * cm * x, f_x1
 
 class TVLoss(nn.Module):
+    def __init__(self):
+        super(TVLoss, self).__init__()
+
     def forward(self, x):
         b, c, h, w = x.shape
         
@@ -134,6 +141,9 @@ class TVLoss(nn.Module):
         return sum ** 0.5
                     
 class GramMatrix(nn.Module):
+    def __init__(self):
+        super(GramMatrix, self).__init__()
+
     def forward(self, x):
         a, b, c, d = x.shape
         features = x.view(a * b, c * d)

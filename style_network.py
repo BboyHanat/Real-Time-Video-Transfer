@@ -2,25 +2,19 @@ import torch
 import torchvision 
 import torch.nn as nn 
 import numpy as np
+from collections import OrderedDict
 
 from torch.autograd import Variable
 
 def conv_block(name, in_C, out_C, activation='ReLU', kernel_size=3, stride=1, padding=1, transpose=False):
     block = nn.Sequential()
-
-    if not transpose:
-        func = nn.Conv2d
-        conv = ' Conv'
-    else:
-        func = nn.ConvTranspose2d
-        conv = ' DeConv'
     if activation == 'ReLU':
         activate = nn.ReLU
     elif activation == 'Tanh':
         activate = nn.Tanh
-
-    block.add_module(name + conv, func(in_C, out_C, kernel_size, stride, padding))
-    block.add_module(name + ' Inst_norm', nn.InstanceNorm2d(out_C))
+    conv = ' Conv'
+    block.add_module(name + conv, nn.Conv2d(in_C, out_C, kernel_size, stride, padding))
+    block.add_module(name + 'Inst_norm', nn.InstanceNorm2d(out_C))
     if activation == 'ReLU':
         block.add_module(name + ' ' + activation, activate(inplace=True))
     elif activation == 'Tanh':
@@ -49,10 +43,11 @@ class StyleNet(nn.Module):
         self.res3 = res_block(name + ' ResBlock3')
         self.res4 = res_block(name + ' ResBlock4')
         self.res5 = res_block(name + ' ResBlock5')
-        self.layer4 = conv_block(name + ' 4', 48, 32, stride=2, transpose=True)
-        self.layer5 = conv_block(name + ' 5', 32, 16, stride=2, transpose=True)
+        self.layer4 = conv_block(name + ' 4', 48, 32, stride=1, transpose=True)
+        self.layer5 = conv_block(name + ' 5', 32, 16, stride=1, transpose=True)
         self.layer6 = conv_block(name + ' 6', 16, 3, activation='Tanh')
-    
+        self.up_sample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+
     def forward(self, x):
         out1 = self.layer1(x)
         out2 = self.layer2(out1)
@@ -63,7 +58,9 @@ class StyleNet(nn.Module):
         res4 = self.res4(res3)
         res5 = self.res5(res4)
         out4 = self.layer4(res5)
+        out4 = self.up_sample(out4)
         out5 = self.layer5(out4)
+        out5 = self.up_sample(out5)
         out6 = self.layer6(out5)
         return out6
 

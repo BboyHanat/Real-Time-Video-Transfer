@@ -80,15 +80,15 @@ class Transfer:
                     content_loss = content_t + content_t1
 
                     # StyleLoss
-                    style_t = None
-                    style_t1 = None
-                    tv_loss = None
-                    for layer in range(len(self.style_layer)):
-                        style_t += StyleLoss(self.gpu)(s, s_hxt[layer])
-                        style_t1 += StyleLoss(self.gpu)(s, s_hxt1[layer])
+                    style_t = StyleLoss(self.gpu)(s[0], s_hxt[0])
+                    style_t1 = StyleLoss(self.gpu)(s[0], s_hxt1[0])
+                    tv_loss = TVLoss()(s_hxt[0])
+                    for layer in range(1, len(self.style_layer)):
+                        style_t += StyleLoss(self.gpu)(s[layer], s_hxt[layer])
+                        style_t1 += StyleLoss(self.gpu)(s[layer], s_hxt1[layer])
 
                         # TVLoss
-                        tv_loss = TVLoss(s_hxt[layer])
+                        tv_loss += TVLoss()(s_hxt[layer])
                     style_loss = style_t + style_t1
 
                     # Optical flow
@@ -108,5 +108,6 @@ class Transfer:
 
 
 
-transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(1920, 1080))
+# transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
+transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
 transfer.train()

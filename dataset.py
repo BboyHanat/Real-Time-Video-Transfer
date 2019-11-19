@@ -11,10 +11,9 @@ class Dataset(data.Dataset):
         self.data_path = data_path
         self.img_shape = img_shape
         self.transform = transform
-        self.video_list = os.listdir(data_path)
+        self.video_list = [f for f in os.listdir(data_path) if '.DS_' not in f]
 
     def __getitem__(self, i):
-        print(i)
         video = cv2.VideoCapture(os.path.join(self.data_path, self.video_list[i]))
         frames = list()
 
