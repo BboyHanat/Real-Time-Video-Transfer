@@ -86,7 +86,7 @@ class ContentLoss(nn.Module):
         assert x.shape == target.shape, "input & target shape ain't same."
         b, c, h, w = x.shape
 
-        return (1 / (c * h * w)) * torch.mean((x - target) ** 2)
+        return (1 / (c * h * w)) * torch.sqrt(torch.sum((x - target) ** 2))
 
 
 class StyleLoss(nn.Module):

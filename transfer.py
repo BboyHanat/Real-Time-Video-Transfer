@@ -131,5 +131,15 @@ class Transfer:
 
 
 # transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
-transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.001, 1, 10, 0.001, 10000, gpu=True, img_shape=(640, 360))
+transfer = Transfer(10,
+                    '/data/User/杨远东/登峰造极/视频素材',
+                    'data/1.jpg',
+                    'model/vgg19-dcbb9e9d.pth',
+                    lr=0.001,
+                    spatial_a=1,
+                    spatial_b=10,
+                    spatial_r=0.001,
+                    temporal_lambda=10000,
+                    gpu=True,
+                    img_shape=(640, 360))
 transfer.train()
