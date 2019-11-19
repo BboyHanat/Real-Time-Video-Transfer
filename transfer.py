@@ -82,7 +82,6 @@ class Transfer:
                     content_t1 = ContentLoss(self.gpu)(s_xt1[3], s_hxt1[3])
                     content_loss = content_t + content_t1
 
-                    print('StyleLoss compute start!')
                     # StyleLoss
                     style_t = StyleLoss(self.gpu)(s[0], s_hxt[0])
                     style_t1 = StyleLoss(self.gpu)(s[0], s_hxt1[0])
@@ -95,30 +94,25 @@ class Transfer:
 
                         # TVLoss
                         tv_loss += TVLoss()(s_hxt[layer])
-                    print('StyleLoss compute finished!')
                     style_loss = style_t + style_t1
 
-                    print('opticalflow compute start!')
                     # Optical flow
                     flow, mask = opticalflow(h_xt.data.numpy(), h_xt1.data.numpy())
-                    print('opticalflow compute finish!')
 
-                    print('TemporalLoss compute start!')
                     # Temporal Loss
                     temporal_loss = TemporalLoss(self.gpu)(h_xt, flow, mask)
-                    print('TemporalLoss compute finished!')
                     # Spatial Loss
                     spatial_loss = self.s_a * content_loss + self.s_b * style_loss + self.s_r * tv_loss
 
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     adam.step()
-                    print("Loss is: {}, epoch: {}".format(Loss, i))
+                    print("Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, epoch: {}".format(Loss, spatial_loss, temporal_loss, i))
             torch.save(self.style_net.state_dict(), 'model/densenet_ocr_model_e{}.pth'.format(count))
 
 
 
 
+transfer = Transfer(10, 'data', '1.jpeg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=False, img_shape=(480, 320))
 # transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
-transfer = Transfer(10, '/data/User/杨远东/登峰造极/视频素材', 'data/1.jpg', 'model/vgg19-dcbb9e9d.pth', 0.1, 0.3, 0.3, 0.1, 0.2, gpu=True, img_shape=(640, 480))
 transfer.train()

@@ -108,7 +108,7 @@ class TemporalLoss(nn.Module):
     cm: confidence mask of optical flow 
     """
     def __init__(self, gpu):
-        super(StyleLoss, self).__init__()
+        super(TemporalLoss, self).__init__()
         if gpu:
             loss = nn.MSELoss().cuda()
         else:
@@ -116,13 +116,13 @@ class TemporalLoss(nn.Module):
         self.loss = loss
 
     def forward(self, x, f_x1, cm):
-        assert x.shape == f_x1, "inputs are ain't same"
+        assert x.shape == f_x1.shape, "inputs are ain't same"
+        _, c, h, w = x.shape
         x = x.view(1, -1)
         f_x1 = f_x1.view(1, -1)
         cm = cm.view(-1)
-
-        D = f_x1.shape[1]
-        return (1 / D) * cm * x, f_x1
+        return self.loss(x, f_x1)
+        # return (torch.sum((x-f_x1) ** 2) * (1 / c)) / (w*h)
 
 class TVLoss(nn.Module):
     def __init__(self):
@@ -130,13 +130,19 @@ class TVLoss(nn.Module):
 
     def forward(self, x):
         b, c, h, w = x.shape
-        
-        sum = 0
-        for i_c in range(c):
-            for i_h in range(h-1):
-                for i_w in range(w-1):
-                    sum += (x[0][i_c][i_h][i_w+1] - x[0][i_c][i_h][i_w]) ** 2
-                    sum += (x[0][i_c][i_h+1][i_w] - x[0][i_c][i_h][i_w]) ** 2
+
+        for i_w in range(w - 1):
+            sum_cols = (x[0, :, :, i_w+1] - x[0, :, :, i_w]) ** 2
+        sum = torch.sum(sum_cols)
+        for i_h in range(h-1):
+            sum_rows = (x[0, :, [i_h+1], :] - x[0, :, i_h, :]) ** 2
+        sum += torch.sum(sum_rows)
+        # sum = 0
+        # for i_c in range(c):
+        #     for i_h in range(h-1):
+        #         for i_w in range(w-1):
+        #             sum += (x[0][i_c][i_h][i_w+1] - x[0][i_c][i_h][i_w]) ** 2
+        #             sum += (x[0][i_c][i_h+1][i_w] - x[0][i_c][i_h][i_w]) ** 2
 
         return sum ** 0.5
                     

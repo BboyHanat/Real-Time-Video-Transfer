@@ -1,12 +1,15 @@
 import cv2
 import numpy as np
+import torch
 
 
 # input is numpy image array
 def opticalflow(img1, img2):
+    img1 = np.squeeze(np.transpose(img1, (0, 2, 3, 1)))
+    img2 = np.squeeze(np.transpose(img2, (0, 2, 3, 1)))
     prvs = cv2.cvtColor(img1, cv2.COLOR_RGB2GRAY)
     next = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
-    hsv = np.zeros_like(prvs)
+    hsv = np.zeros_like(img1)
     hsv[..., 1] = 255
 
     flow = cv2.calcOpticalFlowFarneback(prvs, next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
@@ -18,6 +21,7 @@ def opticalflow(img1, img2):
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
 
     mask = np.where(mag > 0.5, 0, 1)
-    gray[mask]
-
-    return rgb, gray[mask]
+    gray = gray*mask
+    rgb = torch.from_numpy(np.expand_dims(np.transpose(rgb,(2, 0, 1)), 0)).contiguous()
+    gray = torch.from_numpy(gray).contiguous()
+    return rgb, gray
