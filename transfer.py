@@ -209,7 +209,7 @@ class ImageTransfer:
         for count in range(self.epoch):
             for step, frames in enumerate(loader):
 
-                x_t = frames
+                x_t = frames[0]
                 if self.gpu:
                     x_t = x_t.cuda()
 
@@ -238,8 +238,8 @@ class ImageTransfer:
                 Loss.backward(retain_graph=True)
                 adadelta.step()
 
-                logger.info('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
-                print('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
+                logger.info('Loss is: {}, spatial_loss is: {} step: {} '.format(str(Loss), str(spatial_loss), str(step)))
+                print('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}'.format(str(Loss), str(spatial_loss), str(step)))
                 if step % 300 == 0 and step >= 300:
                     s_np_image = x_t.data.cpu().numpy()
                     s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
@@ -282,6 +282,10 @@ if __name__ == '__main1__':
     transfer.train()
 
 if __name__ == '__main__':
+    # transfer = ImageTransfer(10, 'data/PNG', '1.jpeg', 'model/vgg19-dcbb9e9d.pth',
+    #                          lr=0.001,spatial_a=1,spatial_b=0.00001,spatial_r=0.000001,temporal_lambda=10000,
+    #                          gpu=False,
+    #                          img_shape=(640, 360))
     transfer = ImageTransfer(10,
                         '/data/User/杨远东/登峰造极/图片素材/buildings',
                         'data/1.jpg',
