@@ -294,7 +294,7 @@ if __name__ == '__main__':
                         lr=0.001,
                         spatial_a=100,
                         spatial_b=0.00001,
-                        spatial_r=0.01,
+                        spatial_r=0.00001,
                         temporal_lambda=10000,
                         gpu=True,
                         img_shape=(640, 360))
