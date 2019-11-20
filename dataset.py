@@ -26,10 +26,8 @@ class Dataset(data.Dataset):
             rgb_frame = cv2.resize(rgb_frame, self.img_shape)
 
             if self.transform is not None:
-                rgb_frame = rgb_frame/127.5 - 1.0
-                rgb_frame = np.transpose(rgb_frame, (2, 0, 1))
-                rgb_frame = torch.from_numpy(rgb_frame).float()
-                # rgb_frame = self.transform(rgb_frame)
+                rgb_frame = np.asarray(rgb_frame, np.float32)/255.0
+                rgb_frame = self.transform(rgb_frame)
 
             frames.append(rgb_frame)
         return frames

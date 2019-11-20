@@ -85,9 +85,9 @@ class ContentLoss(nn.Module):
     def forward(self, x, target):
         assert x.shape == target.shape, "input & target shape ain't same."
         b, c, h, w = x.shape
-
-        return (1 / (c * h * w)) * torch.sqrt(torch.sum((x - target) ** 2))
-
+        mse_loss = F.mse_loss(x, target)
+        # return (1 / (c * h * w)) * torch.sqrt(torch.sum((x - target) ** 2))
+        return mse_loss
 
 class StyleLoss(nn.Module):
     def __init__(self, gpu):
@@ -100,8 +100,9 @@ class StyleLoss(nn.Module):
 
     def forward(self, x, target):
         channel = x.shape[3]
-        loss = (1 / (channel ** 2)) * self.loss(GramMatrix()(x), GramMatrix()(target))
-        return loss
+        mse_loss = F.mse_loss(GramMatrix()(x), GramMatrix()(target))
+        # loss = (1 / (channel ** 2)) * self.loss(GramMatrix()(x), GramMatrix()(target))
+        return mse_loss
 
 
 class TemporalLoss(nn.Module):
@@ -132,16 +133,19 @@ class TVLoss(nn.Module):
         super(TVLoss, self).__init__()
 
     def forward(self, x):
-        b, c, h, w = x.shape
+        # b, c, h, w = x.shape
 
-        for i_w in range(w - 1):
-            sum_cols = (x[0, :, :, i_w + 1] - x[0, :, :, i_w]) ** 2
-        sum = torch.sum(sum_cols)
-        for i_h in range(h - 1):
-            sum_rows = (x[0, :, [i_h + 1], :] - x[0, :, i_h, :]) ** 2
-        sum += torch.sum(sum_rows)
+        # for i_w in range(w - 1):
+        #     sum_cols = (x[0, :, :, i_w + 1] - x[0, :, :, i_w]) ** 2
+        # sum = torch.sum(sum_cols)
+        # for i_h in range(h - 1):
+        #     sum_rows = (x[0, :, [i_h + 1], :] - x[0, :, i_h, :]) ** 2
+        # sum += torch.sum(sum_rows)
 
-        return sum ** 0.5
+        sum = (torch.sum(torch.abs(x[:, :, :, :-1] - x[:, :, :, 1:])) +
+                               torch.sum(torch.abs(x[:, :, :-1, :] - x[:, :, 1:, :])))
+
+        return sum # ** 0.5
 
 
 class GramMatrix(nn.Module):
@@ -149,7 +153,8 @@ class GramMatrix(nn.Module):
         super(GramMatrix, self).__init__()
 
     def forward(self, x):
-        a, b, c, d = x.shape
-        features = x.view(a * b, c * d)
-        G = torch.mm(features, features.t())
-        return G.div(a * b * c * d)
+        (b, ch, h, w) = x.size()
+        features = x.view(b, ch, w * h)
+        features_t = features.transpose(1, 2)
+        gram = features.bmm(features_t) / (ch * h * w)
+        return gram

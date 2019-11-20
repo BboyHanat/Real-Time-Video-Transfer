@@ -51,11 +51,8 @@ class Transfer:
 
         img = Image.open(self.style_path)
         img = img.resize(self.img_shape)
-        img = np.asarray(img)/127.5 - 1.0
-        img = np.transpose(img, (2, 0, 1))
-        # img = transform(img).float()
-        img = torch.from_numpy(img)
-        img = img.float()
+        img = np.asarray(img, np.float32)/255.0
+        img = transform(img)
         img = img.unsqueeze(0)
         img = Variable(img, requires_grad=True)
         return img
@@ -137,10 +134,14 @@ class Transfer:
                     if i % 480 == 0 and i >=480:
                         s_np_image = x_t.data.cpu().numpy()
                         s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
-                        s_np_image = np.asarray((s_np_image + 1) * 127.5, np.uint8)
+                        transform_np_s = ((s_np_image + 1) * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
+                        s_np_image = np.asarray(transform_np_s, np.uint8)
+
                         np_image = h_xt.data.cpu().numpy()
                         np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
-                        np_image = np.asarray((np_image + 1) * 127.5, np.uint8)
+                        transform_np = ((np_image + 1) * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
+                        np_image = np.asarray(transform_np, np.uint8)
+
                         cv2.imwrite('output/style_e{}_s{}_i{}.jpg'.format(count, step, i), np_image)
                         cv2.imwrite('output/source_e{}_s{}_i{}.jpg'.format(count, step, i), s_np_image)
             logger.info('model saving')
