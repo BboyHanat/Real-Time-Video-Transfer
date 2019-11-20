@@ -141,7 +141,8 @@ class Transfer:
 
                         np_image = h_xt.data.cpu().numpy()
                         np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
-                        transform_np = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
+                        # transform_np = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
+                        transform_np = (np_image + 1) * 127.5
                         transform_np = transform_np.clip(0, 255)
                         np_image = np.asarray(transform_np, np.uint8)
 

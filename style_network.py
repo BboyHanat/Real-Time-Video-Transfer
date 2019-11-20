@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 from torch.autograd import Variable
 
-def conv_block(name, in_C, out_C, activation='ReLU', kernel_size=3, stride=1, padding=1, transpose=False):
+def conv_block(name, in_C, out_C, activation='ReLU', kernel_size=3, stride=1, padding=1, InstanceNorm=True):
     block = nn.Sequential()
     if activation == 'ReLU':
         activate = nn.ReLU
@@ -14,7 +14,8 @@ def conv_block(name, in_C, out_C, activation='ReLU', kernel_size=3, stride=1, pa
         activate = nn.Tanh
     conv = ' Conv'
     block.add_module(name + conv, nn.Conv2d(in_C, out_C, kernel_size, stride, padding))
-    block.add_module(name + 'Inst_norm', nn.InstanceNorm2d(out_C))
+    if InstanceNorm:
+        block.add_module(name + 'Inst_norm', nn.InstanceNorm2d(out_C))
     if activation == 'ReLU':
         block.add_module(name + ' ' + activation, activate(inplace=True))
     elif activation == 'Tanh':
@@ -43,20 +44,20 @@ class StyleNet(nn.Module):
         self.res3 = res_block(name + ' ResBlock3')
         self.res4 = res_block(name + ' ResBlock4')
         self.res5 = res_block(name + ' ResBlock5')
-        self.layer4 = conv_block(name + ' 4', 48, 32, stride=1, transpose=True)
-        self.layer5 = conv_block(name + ' 5', 32, 16, stride=1, transpose=True)
-        self.layer6 = conv_block(name + ' 6', 16, 3, activation='Tanh')
+        self.layer4 = conv_block(name + ' 4', 48, 32, stride=1)
+        self.layer5 = conv_block(name + ' 5', 32, 16, stride=1)
+        self.layer6 = conv_block(name + ' 6', 16, 3, activation='Tanh', InstanceNorm=False)  # first test
         self.up_sample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
     def forward(self, x):
         out1 = self.layer1(x)
         out2 = self.layer2(out1)
         out3 = self.layer3(out2)
-        res1 = self.res1(out3)
-        res2 = self.res2(res1)
-        res3 = self.res3(res2)
-        res4 = self.res4(res3)
-        res5 = self.res5(res4)
+        res1 = self.res1(out3) + out3               # second test
+        res2 = self.res2(res1) + res1
+        res3 = self.res3(res2) + res2
+        res4 = self.res4(res3) + res3
+        res5 = self.res5(res4) + res4
         out4 = self.layer4(res5)
         out4 = self.up_sample(out4)
         out5 = self.layer5(out4)
