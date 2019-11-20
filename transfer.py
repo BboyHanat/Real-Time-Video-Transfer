@@ -127,7 +127,7 @@ class Transfer:
                     temporal_loss = TemporalLoss(self.gpu)(h_xt, flow, mask)
                     # Spatial Loss
                     spatial_loss = self.s_a * content_loss + self.s_b * style_loss + self.s_r * tv_loss
-
+                    print('content_loss is {}, style_loss is {}, tv_loss is {}'.format(self.s_a * content_loss, self.s_b * style_loss, self.s_r * tv_loss))
                     Loss = spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     adam.step()
@@ -152,8 +152,8 @@ transfer = Transfer(10,
                     'data/1.jpg',
                     'model/vgg19-dcbb9e9d.pth',
                     lr=0.001,
-                    spatial_a=100,
-                    spatial_b=1,
+                    spatial_a=1000,
+                    spatial_b=0.01,
                     spatial_r=0.001,
                     temporal_lambda=1000,
                     gpu=True,
