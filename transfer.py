@@ -240,7 +240,7 @@ class ImageTransfer:
 
                 logger.info('Loss is: {}, spatial_loss is: {} step: {} '.format(str(Loss), str(spatial_loss), str(step)))
                 print('Loss is: {}, spatial_loss is: {}, step: {}'.format(str(Loss), str(spatial_loss), str(step)))
-                if step % 300 == 0 and step >= 300:
+                if step % 100 == 0 and step >= 100:
                     s_np_image = x_t.data.cpu().numpy()
                     s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
                     transform_np_s = (s_np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
