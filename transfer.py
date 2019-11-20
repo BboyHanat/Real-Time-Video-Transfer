@@ -38,7 +38,7 @@ class Transfer:
         self.s_r = spatial_r 
         self.t_l = temporal_lambda
 
-        self.style_net = TransformNet()
+        self.style_net = StyleNet()
         self.loss_net = LossNet(vgg_path)
         self.style_layer = ['conv1_2', 'conv2_2', 'conv3_4', 'conv4_4']
 

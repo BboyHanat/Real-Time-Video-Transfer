@@ -143,10 +143,10 @@ class TVLoss(nn.Module):
         #     sum_rows = (x[0, :, [i_h + 1], :] - x[0, :, i_h, :]) ** 2
         # sum += torch.sum(sum_rows)
 
-        sum = (torch.sum(torch.abs(x[:, :, :, :-1] - x[:, :, :, 1:])) +
-                               torch.sum(torch.abs(x[:, :, :-1, :] - x[:, :, 1:, :])))
+        sum = torch.sum(torch.abs(x[:, :, :, :-1] - x[:, :, :, 1:]))**2 \
+              + torch.sum(torch.abs(x[:, :, :-1, :] - x[:, :, 1:, :]))**2
 
-        return sum # ** 0.5
+        return sum ** 0.5
 
 
 class GramMatrix(nn.Module):
@@ -160,6 +160,3 @@ class GramMatrix(nn.Module):
         gram = features.bmm(features_t) / (ch * h * w)
         return gram
 
-
-a = LossNet('model/vgg19-dcbb9e9d.pth')
-print(a)
