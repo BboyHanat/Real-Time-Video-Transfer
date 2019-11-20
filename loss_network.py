@@ -44,31 +44,31 @@ class LossNet(nn.Module):
 
     def forward(self, x, out_key):
         out = {}
-        out['conv1_1'] = F.relu(self.conv1_1(x))
-        out['conv1_2'] = F.relu(self.conv1_2(out['conv1_1']))
-        out['pool1'] = F.max_pool2d(out['conv1_2'], kernel_size=2)
+        out['conv1_1'] = F.relu(self.conv1_1(x), inplace=True)
+        out['conv1_2'] = F.relu(self.conv1_2(out['conv1_1']), inplace=True)
+        out['pool1'] = F.max_pool2d(out['conv1_2'], kernel_size=2, stride=2)
 
-        out['conv2_1'] = F.relu(self.conv2_1(out['pool1']))
-        out['conv2_2'] = F.relu(self.conv2_2(out['conv2_1']))
-        out['pool2'] = F.max_pool2d(out['conv2_2'], kernel_size=2)
+        out['conv2_1'] = F.relu(self.conv2_1(out['pool1']), inplace=True)
+        out['conv2_2'] = F.relu(self.conv2_2(out['conv2_1']), inplace=True)
+        out['pool2'] = F.max_pool2d(out['conv2_2'], kernel_size=2, stride=2)
 
-        out['conv3_1'] = F.relu(self.conv3_1(out['pool2']))
-        out['conv3_2'] = F.relu(self.conv3_2(out['conv3_1']))
-        out['conv3_3'] = F.relu(self.conv3_3(out['conv3_2']))
-        out['conv3_4'] = F.relu(self.conv3_4(out['conv3_3']))
-        out['pool3'] = F.max_pool2d(out['conv3_4'], kernel_size=2)
+        out['conv3_1'] = F.relu(self.conv3_1(out['pool2']), inplace=True)
+        out['conv3_2'] = F.relu(self.conv3_2(out['conv3_1']), inplace=True)
+        out['conv3_3'] = F.relu(self.conv3_3(out['conv3_2']), inplace=True)
+        out['conv3_4'] = F.relu(self.conv3_4(out['conv3_3']), inplace=True)
+        out['pool3'] = F.max_pool2d(out['conv3_4'], kernel_size=2, stride=2)
 
         out['conv4_1'] = F.relu(self.conv4_1(out['pool3']))
         out['conv4_2'] = F.relu(self.conv4_2(out['conv4_1']))
-        # out['conv4_3'] = F.relu(self.conv4_3(out['conv4_2']))
-        # out['conv4_4'] = F.relu(self.conv4_4(out['conv4_3']))
-        # out['pool4']   = F.max_pool2d(out['conv4_4'], kernel_size=2)
+        out['conv4_3'] = F.relu(self.conv4_3(out['conv4_2']))
+        out['conv4_4'] = F.relu(self.conv4_4(out['conv4_3']))
+        # out['pool4']   = F.max_pool2d(out['conv4_4'], kernel_size=2, stride=2)
         #
         # out['conv5_1'] = F.relu(self.conv5_1(out['pool4']))
         # out['conv5_2'] = F.relu(self.conv5_2(out['conv5_1']))
         # out['conv5_3'] = F.relu(self.conv5_3(out['conv5_2']))
         # out['conv5_4'] = F.relu(self.conv5_4(out['conv5_3']))
-        # out['pool5']   = F.max_pool2d(out['conv5_4'], kernel_size=2)
+        # out['pool5']   = F.max_pool2d(out['conv5_4'], kernel_size=2, stride=2)
 
         return [out[key] for key in out_key]
 
@@ -85,8 +85,8 @@ class ContentLoss(nn.Module):
     def forward(self, x, target):
         assert x.shape == target.shape, "input & target shape ain't same."
         b, c, h, w = x.shape
-        mse_loss = F.mse_loss(x, target)
-        # return (1 / (c * h * w)) * torch.sqrt(torch.sum((x - target) ** 2))
+        # mse_loss = F.mse_loss(x, target)
+        return (1 / (c * h * w)) * torch.sum((x - target) ** 2)
         return mse_loss
 
 class StyleLoss(nn.Module):
@@ -100,9 +100,10 @@ class StyleLoss(nn.Module):
 
     def forward(self, x, target):
         channel = x.shape[3]
-        mse_loss = F.mse_loss(GramMatrix()(x), GramMatrix()(target))
+        # mse_loss = F.mse_loss(GramMatrix()(x), GramMatrix()(target))
         # loss = (1 / (channel ** 2)) * self.loss(GramMatrix()(x), GramMatrix()(target))
-        return mse_loss
+        loss = (1 / (channel ** 2)) * torch.sum((GramMatrix()(x) - GramMatrix()(target)) ** 2)
+        return loss
 
 
 class TemporalLoss(nn.Module):
@@ -158,3 +159,7 @@ class GramMatrix(nn.Module):
         features_t = features.transpose(1, 2)
         gram = features.bmm(features_t) / (ch * h * w)
         return gram
+
+
+a = LossNet('model/vgg19-dcbb9e9d.pth')
+print(a)

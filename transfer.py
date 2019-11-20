@@ -40,7 +40,7 @@ class Transfer:
 
         self.style_net = TransformNet()
         self.loss_net = LossNet(vgg_path)
-        self.style_layer = ['conv1_2', 'conv2_2', 'conv3_2', 'conv4_2']
+        self.style_layer = ['conv1_2', 'conv2_2', 'conv3_4', 'conv4_4']
 
         self.transform = transforms.Compose([transforms.ToTensor(),
                                              transforms.Normalize((0.485, 0.456, 0.406),
@@ -131,7 +131,7 @@ class Transfer:
 
                     logger.info('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
                     print('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
-                    if i % 480 == 0 and i >=480:
+                    if i % 480 == 0 and i >= 480:
                         s_np_image = x_t.data.cpu().numpy()
                         s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
                         transform_np_s = (s_np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
