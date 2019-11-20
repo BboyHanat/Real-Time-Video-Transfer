@@ -233,9 +233,9 @@ class ImageTransfer:
                 tv_loss = TVLoss()(s_hxt[3])
 
                 # Spatial Loss
-                spatial_loss = self.s_a * content_loss + self.s_b * style_loss + self.s_r * tv_loss
+                spatial_loss = self.s_a * content_loss + self.s_r * tv_loss # + self.s_b * style_loss +
                 print('content_loss is {}, style_loss is {}, tv_loss is {}'.format(self.s_a * content_loss, self.s_b * style_loss, self.s_r * tv_loss))
-                Loss = torch.mean(content_loss)  # spatial_loss + self.t_l * temporal_loss
+                Loss = torch.mean(spatial_loss)  # spatial_loss + self.t_l * temporal_loss
                 Loss.backward(retain_graph=True)
                 adam.step()
 
@@ -294,7 +294,7 @@ if __name__ == '__main__':
                         lr=0.001,
                         spatial_a=100,
                         spatial_b=0.00001,
-                        spatial_r=0.001,
+                        spatial_r=0.01,
                         temporal_lambda=10000,
                         gpu=True,
                         img_shape=(640, 360))
