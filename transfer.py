@@ -47,12 +47,11 @@ class Transfer:
         self.img_shape = img_shape                                                                  
 
     def load_style(self):
-        transform = transforms.Compose([transforms.ToTensor()])
 
         img = Image.open(self.style_path)
         img = img.resize(self.img_shape)
         img = np.asarray(img, np.float32)/255.0
-        img = transform(img)
+        img = self.transform(img)
         img = img.unsqueeze(0)
         img = Variable(img, requires_grad=True)
         return img
@@ -135,6 +134,7 @@ class Transfer:
                         s_np_image = x_t.data.cpu().numpy()
                         s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
                         transform_np_s = ((s_np_image + 1) * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
+                        transform_np_s = transform_np_s.clip(0, 255)
                         s_np_image = np.asarray(transform_np_s, np.uint8)
 
                         np_image = h_xt.data.cpu().numpy()
