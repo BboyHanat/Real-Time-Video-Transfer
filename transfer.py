@@ -242,7 +242,7 @@ class ImageTransfer:
                 print('Loss is: {}, spatial_loss is: {}, step: {}'.format(str(Loss), str(spatial_loss), str(step)))
                 if step % 100 == 0 and step >= 100:
                     s_np_image = x_t.data.cpu().numpy()
-                    s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1))[0,:,:,:])
+                    s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1))[0, :, :, :])
                     transform_np_s = (s_np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
                     transform_np_s = transform_np_s.clip(0, 255)
                     s_np_image = np.asarray(transform_np_s, np.uint8)
@@ -291,9 +291,9 @@ if __name__ == '__main__':
                         'data/1.jpg',
                         'model/vgg19-dcbb9e9d.pth',
                         lr=0.001,
-                        spatial_a=1,
+                        spatial_a=100,
                         spatial_b=0.00001,
-                        spatial_r=0.000001,
+                        spatial_r=0.001,
                         temporal_lambda=10000,
                         gpu=True,
                         img_shape=(640, 360))

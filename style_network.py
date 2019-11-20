@@ -46,7 +46,7 @@ class StyleNet(nn.Module):
         self.res5 = res_block(name + ' ResBlock5')
         self.layer4 = conv_block(name + ' 4', 48, 32, stride=1)
         self.layer5 = conv_block(name + ' 5', 32, 16, stride=1)
-        self.layer6 = conv_block(name + ' 6', 16, 3, activation='Tanh', InstanceNorm=False)  # first test
+        self.layer6 = conv_block(name + ' 6', 16, 3, activation='Tanh', InstanceNorm=True)  # first test
         self.up_sample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
     def forward(self, x):
