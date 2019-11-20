@@ -134,15 +134,6 @@ class TVLoss(nn.Module):
         super(TVLoss, self).__init__()
 
     def forward(self, x):
-        # b, c, h, w = x.shape
-
-        # for i_w in range(w - 1):
-        #     sum_cols = (x[0, :, :, i_w + 1] - x[0, :, :, i_w]) ** 2
-        # sum = torch.sum(sum_cols)
-        # for i_h in range(h - 1):
-        #     sum_rows = (x[0, :, [i_h + 1], :] - x[0, :, i_h, :]) ** 2
-        # sum += torch.sum(sum_rows)
-
         sum = torch.sum(torch.abs(x[:, :, :, :-1] - x[:, :, :, 1:]))**2 \
               + torch.sum(torch.abs(x[:, :, :-1, :] - x[:, :, 1:, :]))**2
 
