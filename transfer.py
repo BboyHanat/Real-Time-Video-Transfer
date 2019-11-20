@@ -67,6 +67,7 @@ class Transfer:
 
         adam = optim.Adam(self.style_net.parameters(), lr=self.lr)
         sgd = optim.SGD(self.style_net.parameters(), lr=self.lr, momentum=0.9)
+        adadelta = optim.Adadelta(self.style_net.parameters(), lr=self.lr)
         
         loader = get_loader(1, self.data_path, self.img_shape, self.transform)
         logger.info('Data Load Success!!')
