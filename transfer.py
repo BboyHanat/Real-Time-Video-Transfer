@@ -134,7 +134,7 @@ class Transfer:
 
                     logger.info('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
                     print('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {} frame {}'.format(str(Loss), str(spatial_loss), str(temporal_loss), str(step), str(i)))
-                    if i % 800 == 0 and i >=800:
+                    if i % 480 == 0 and i >=480:
                         s_np_image = x_t.data.cpu().numpy()
                         s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
                         s_np_image = np.asarray((s_np_image + 1) * 127.5, np.uint8)
