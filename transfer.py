@@ -242,14 +242,14 @@ class ImageTransfer:
                 print('Loss is: {}, spatial_loss is: {}, step: {}'.format(str(Loss), str(spatial_loss), str(step)))
                 if step % 100 == 0 and step >= 100:
                     s_np_image = x_t.data.cpu().numpy()
-                    s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
+                    s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1))[0,:,:,:])
                     transform_np_s = (s_np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
                     transform_np_s = transform_np_s.clip(0, 255)
                     s_np_image = np.asarray(transform_np_s, np.uint8)
                     s_np_image = cv2.cvtColor(s_np_image, cv2.COLOR_RGB2BGR)
 
                     np_image = h_xt.data.cpu().numpy()
-                    np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1)))
+                    np_image = np.squeeze(np.transpose(np_image, (0, 2, 3, 1))[0,:,:,:])
                     # transform_np = (np_image * (0.229, 0.224, 0.225) + (0.485, 0.456, 0.406)) * 255
                     transform_np = (np_image + 1) * 127.5
                     transform_np = transform_np.clip(0, 255)
