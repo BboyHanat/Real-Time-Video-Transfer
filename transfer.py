@@ -287,7 +287,7 @@ if __name__ == '__main__':
     #                          lr=0.001,spatial_a=1,spatial_b=0.00001,spatial_r=0.000001,temporal_lambda=10000,
     #                          gpu=False,
     #                          img_shape=(640, 360))
-    transfer = ImageTransfer(10,
+    transfer = ImageTransfer(100,
                         '/data/User/杨远东/登峰造极/图片素材/buildings',
                         'data/1.jpg',
                         'model/vgg19-dcbb9e9d.pth',
