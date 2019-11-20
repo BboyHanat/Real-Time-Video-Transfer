@@ -6,6 +6,7 @@ import torch.optim as optim
 from torchvision import transforms
 from PIL import Image
 
+from transform_net import TransformNet
 from style_network import *
 from loss_network import *
 from dataset import get_loader
@@ -37,7 +38,7 @@ class Transfer:
         self.s_r = spatial_r 
         self.t_l = temporal_lambda
 
-        self.style_net = StyleNet()
+        self.style_net = TransformNet()
         self.loss_net = LossNet(vgg_path)
         self.style_layer = ['conv1_2', 'conv2_2', 'conv3_2', 'conv4_2']
 
