@@ -220,7 +220,8 @@ class ImageTransfer:
                 s = self.loss_net(style_img, self.style_layer)
 
                 # ContentLoss, conv4_2
-                content_loss = ContentLoss(self.gpu)(s_xt[3], s_hxt[3])
+                # content_loss = ContentLoss(self.gpu)(s_xt[3], s_hxt[3])
+                content_loss = ContentLoss(self.gpu)(x_t, h_xt)
 
                 # StyleLoss
                 style_loss = StyleLoss(self.gpu)(s[0], s_hxt[0])
