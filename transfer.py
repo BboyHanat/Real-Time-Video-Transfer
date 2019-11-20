@@ -239,7 +239,7 @@ class ImageTransfer:
                 adadelta.step()
 
                 logger.info('Loss is: {}, spatial_loss is: {} step: {} '.format(str(Loss), str(spatial_loss), str(step)))
-                print('Loss is: {}, spatial_loss is: {}, temporal_loss is: {}, step: {}'.format(str(Loss), str(spatial_loss), str(step)))
+                print('Loss is: {}, spatial_loss is: {}, step: {}'.format(str(Loss), str(spatial_loss), str(step)))
                 if step % 300 == 0 and step >= 300:
                     s_np_image = x_t.data.cpu().numpy()
                     s_np_image = np.squeeze(np.transpose(s_np_image, (0, 2, 3, 1)))
