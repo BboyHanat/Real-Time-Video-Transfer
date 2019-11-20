@@ -152,10 +152,10 @@ transfer = Transfer(10,
                     'data/1.jpg',
                     'model/vgg19-dcbb9e9d.pth',
                     lr=0.001,
-                    spatial_a=1,
-                    spatial_b=10,
+                    spatial_a=100,
+                    spatial_b=1,
                     spatial_r=0.001,
-                    temporal_lambda=10000,
+                    temporal_lambda=1000,
                     gpu=True,
                     img_shape=(640, 360))
 transfer.train()
