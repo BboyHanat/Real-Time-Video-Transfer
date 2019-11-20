@@ -200,7 +200,7 @@ class ImageTransfer:
         sgd = optim.SGD(self.style_net.parameters(), lr=self.lr, momentum=0.9)
         adadelta = optim.Adadelta(self.style_net.parameters(), lr=self.lr)
 
-        loader = get_image_loader(4, self.data_path, self.img_shape, self.transform)
+        loader = get_image_loader(8, self.data_path, self.img_shape, self.transform)
         logger.info('Data Load Success!!')
         print('Data Load Success!!')
 
@@ -230,7 +230,7 @@ class ImageTransfer:
                     style_loss += StyleLoss(self.gpu)(s[layer], s_hxt[layer])
 
                     # TVLoss
-                tv_loss = TVLoss()(s_hxt[3])
+                tv_loss = TVLoss()(h_xt)
 
                 # Spatial Loss
                 spatial_loss = self.s_a * content_loss + self.s_r * tv_loss # + self.s_b * style_loss +
