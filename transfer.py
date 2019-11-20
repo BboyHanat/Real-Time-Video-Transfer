@@ -126,7 +126,7 @@ class Transfer:
                     # Spatial Loss
                     spatial_loss = self.s_a * content_loss + self.s_b * style_loss + self.s_r * tv_loss
                     print('content_loss is {}, style_loss is {}, tv_loss is {}'.format(self.s_a * content_loss, self.s_b * style_loss, self.s_r * tv_loss))
-                    Loss = spatial_loss #+ self.t_l * temporal_loss
+                    Loss = content_loss # spatial_loss + self.t_l * temporal_loss
                     Loss.backward(retain_graph=True)
                     adadelta.step()
 
