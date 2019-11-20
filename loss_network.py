@@ -85,8 +85,8 @@ class ContentLoss(nn.Module):
     def forward(self, x, target):
         assert x.shape == target.shape, "input & target shape ain't same."
         b, c, h, w = x.shape
-        # mse_loss = F.mse_loss(x, target)
-        return (1 / (c * h * w)) * torch.sum((x - target) ** 2)
+        mse_loss = F.mse_loss(x, target)
+        # return (1 / (c * h * w)) * torch.sum((x - target) ** 2)
         return mse_loss
 
 class StyleLoss(nn.Module):
