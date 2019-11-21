@@ -291,7 +291,7 @@ if __name__ == '__main__':
                         '/data/User/杨远东/登峰造极/图片素材/buildings',
                         'data/1.jpg',
                         'model/vgg19-dcbb9e9d.pth',
-                        lr=0.00001,
+                        lr=0.01,
                         spatial_a=100,
                         spatial_b=0.00001,
                         spatial_r=0.00001,
