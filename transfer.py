@@ -220,8 +220,8 @@ class ImageTransfer:
                 s = self.loss_net(style_img, self.style_layer)
 
                 # ContentLoss, conv4_2
-                # content_loss = ContentLoss(self.gpu)(s_xt[3], s_hxt[3])
-                content_loss = ContentLoss(self.gpu)(x_t, h_xt)
+                content_loss = ContentLoss(self.gpu)(s_xt[3], s_hxt[3])
+                #content_loss = ContentLoss(self.gpu)(x_t, h_xt)
 
                 # StyleLoss
                 style_loss = StyleLoss(self.gpu)(s[0], s_hxt[0])
@@ -292,7 +292,7 @@ if __name__ == '__main__':
                         'data/1.jpg',
                         'model/vgg19-dcbb9e9d.pth',
                         lr=0.01,
-                        spatial_a=100,
+                        spatial_a=1,
                         spatial_b=0.00001,
                         spatial_r=0.00001,
                         temporal_lambda=10000,
