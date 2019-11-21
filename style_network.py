@@ -59,9 +59,9 @@ class StyleNet(nn.Module):
         res4 = self.res4(res3) + res3
         res5 = self.res5(res4) + res4
         out4 = self.layer4(res5)
-        out4 = self.up_sample(out4)
+        out4 = self.up_sample(out4) + out3
         out5 = self.layer5(out4)
-        out5 = self.up_sample(out5)
+        out5 = self.up_sample(out5) + out2
         out6 = self.layer6(out5)
         return out6
 
